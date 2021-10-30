@@ -1,0 +1,27 @@
+<html>
+    <head>
+    <script src="palette.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@vv1.4.0/lib/p5.js" type="text/javascript"></script>
+    <script>
+        let palette;
+        let c;
+        function setup(){
+            createCanvas(100,100);
+        }
+        function draw(){
+            console.log("Testing palette");
+            palette = random_palette();
+            console.log("palette: "+palette);
+            for (let n=0; n<20;n++) {  
+                c = fixed_color(n, palette);
+                console.log("n: " + n + " color: "+c + " len: "+palette.length + " i%len: "+ (n % palette.length));
+            }
+            noLoop();
+        }
+    </script> 
+</head>
+<body>
+
+</body>
+
+</html>

@@ -36,12 +36,17 @@ function setup() {
 
 function draw() {
 	
+
+
 	if (gui_need_refresh) {
 		
 		gui_need_refresh = false;
 		
+
 		val_1 = slider_val_1.value();
 		val_2 = slider_val_2.value();
+		print("val_1: "+val_1);
+		print("val_2: "+val_2);
 		
 
         // do code
