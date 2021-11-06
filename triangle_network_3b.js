@@ -7,9 +7,11 @@ let color_dots_2;
 let color_line_same_row;
 let color_line_other_row;
 let color_mode;
-let dots_strokeWeight = 10;
-let lines_strokeWeight = 20;
-let palette_id = 8;
+/*
+let dots_strokeWeight;
+let lines_strokeWeight;
+let palette_id;
+*/
 
 function setup() {
 
@@ -20,19 +22,19 @@ function setup() {
 
     keyboard_image_name("triangle_network_3"); // set default image save name
 
-    //palette = palette_navy_blue;
-    palette = fixed_palette(palette_id);
-
-    fill(random_color(palette_id));
-
+    
     sliders_initialize();
     sliders_add(2, 35, 15, 1, "rows");	// 0
     sliders_add(2, 20, 16, 1, "rows_min");	
     sliders_add(20, 35, 25, 1, "rows_max");	
-    sliders_add(0, 50, dots_strokeWeight, 1, "dots_strokeWeight"); // 3
-    sliders_add(0, 10, palette_id, 1, "palette_id"); // 4
-    sliders_add(0, 50, lines_strokeWeight, 1, "lines_strokeWeight"); // 5
-    //sliders_format(height + 50);    
+    sliders_add(0, 50, 10, 1, "dots_strokeWeight"); // 3
+    sliders_add(0, 10, 8, 1, "palette_id"); // 4
+    sliders_add(0, 50, 20, 1, "lines_strokeWeight"); // 5
+    
+
+    //palette = palette_navy_blue;
+    palette = fixed_palette(palette_id);
+    fill(random_color(palette_id));
 
     color_mode = 0;     // 0 = random color lines, 1 = fixed green, 2 = fixed palette
     
@@ -57,17 +59,18 @@ function setup() {
 
 function draw() {
 
-    if (sliders_gui_need_refresh) {
+    if (sliders_changed()) {
+        /*
         dots_strokeWeight = sliders_value["dots_strokeWeight"];
         palette_id = sliders_value["palette_id"];
         lines_strokeWeight = sliders_value["lines_strokeWeight"];
         dots_strokeWeight = sliders_value["dots_strokeWeight"];
-
+        */
         palette = fixed_palette(palette_id);
         clear();
         background(random_color(palette));
-        sliders_gui_need_refresh = false;
-        arr_dots = grid_create(sliders_value["rows"], sliders_value["rows_min"], sliders_value["rows_max"], width);
+        //arr_dots = grid_create(sliders_value["rows"], sliders_value["rows_min"], sliders_value["rows_max"], width);
+        arr_dots = grid_create(rows, rows_min, rows_max, width);
         //grid_draw(arr_dots);
         grid_draw_triangles(arr_dots);
     }
