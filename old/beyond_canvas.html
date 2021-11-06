@@ -1,0 +1,53 @@
+<html>
+  <style>
+    .verd {
+      background-color: green;
+      color: greenyellow;
+      border: 2px solid black;
+      margin: 10px;
+      padding: 10px;
+    }.lemon {
+      background-color: tomato;
+      color: white;
+      border: 2px solid black;
+      margin: 20px;
+      padding: 20px;
+    }
+  .div_sliders {
+    border: 5px outset red;
+    background-color: lightblue;
+    text-align: center;
+    }
+    </style>    
+
+  <head>
+      <script src="beyond_canvas.js" type="text/javascript"></script>
+      <script src="lib\sliders_2.js" type="text/javascript"></script>
+      <script src="https://cdn.jsdelivr.net/npm/p5@vv1.4.0/lib/p5.js" type="text/javascript"></script>
+    </head>
+   <body>
+    <div class="verd" id='myContainer'>
+      text del myContainer
+    </div>
+    <div class="div_sliders" id='div_sliders'>
+      text del div_sliders
+    </div>
+    <div class="lemon" id="canvas_p5js">
+    </div>
+    <div class="div_sliders" id="controls" onMouseOver="this.style.right='-44vh';">
+      <h1>TITLE del div CONTROLS</h1>
+      <p>by Ricard</p>
+      <p>Based on the <a href="http://zool33.uni-graz.at/artlife/PPS" target="graz">Primordial Particle System</a><br/>
+        Originally developed at Graz University<br />
+        by Thomas Schmickl & Martin Stefanec<br />
+        <a href="https://www.youtube.com/watch?v=makaJpLvbow" target="youtube">»&thinsp;Watch the YouTube video&thinsp;«</a></p>
+      <p>Alpha (intrinsic turning angle)<br />
+        <input id="alpha1" type="range" min="-180" max="180" step="0.1" onInput="change(this.id,this.value);" /><br />
+        Beta (reactive turning angle)<br />
+        <input id="beta1" type="range" min="-90" max="90" step="0.1" onInput="change(this.id,this.value);" /><br />
+        Gamma (step size)<br />
+        <input id="gamma1" type="range" min="0.001" max="0.5" step="0.001" onInput="change(this.id,this.value);" /></p>
+      <p style="cursor:pointer;" onClick="if (analyse) analyse=false, ps=1; else analyse=true, ps=0; if (paused) step();" /><br /><br /><br /></p>
+    </div>
+  </body>
+</html>

@@ -74,7 +74,7 @@ function draw() {
 
 function seat_row(row, height, radius, seat_width) {
 
-    let seats = PI * radius / seat_width;
+    let seats = PI * radius / seat_width / 1.3;
 
 
     for (let i = 0; i < seats; i++) {

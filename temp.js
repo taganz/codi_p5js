@@ -1,18 +1,13 @@
-var rover;
+//var radius = 10; //instead of defining a variable, use below
 
 function setup() {
-  createCanvas(800, 800, WEBGL);
-  rover = createRoverCam();
-  rover.usePointerLock();    // optional; default is keyboard control only
-  rover.setState({           // optional
-    position: [-400,-200,-200],
-    rotation: [0.4,0.3,0],
-    sensitivity: 0.1,
-    speed: 0.5
-  });
+	createCanvas(400, 400);
+	background(100);
+  sliders_mode_openprocessing(false); // runs on openprocessing, uses OPC
+  sliders_add(0, 100, 50, 1, "radius");  // 0 	
+  sliders_format(450);
 }
 
 function draw() {
-  background(0);
-  box(200);
+	ellipse(mouseX, mouseY, radius, radius);
 }
