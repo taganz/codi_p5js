@@ -20,7 +20,7 @@ function setup() {
     createCanvas(width, height);
     background('white');
 
-    keyboard_image_name("triangle_network_3"); // set default image save name
+    keyboard_image_name("triangle_network_3b"); // set default image save name
 
     
     sliders_initialize();
@@ -60,18 +60,10 @@ function setup() {
 function draw() {
 
     if (sliders_changed()) {
-        /*
-        dots_strokeWeight = sliders_value["dots_strokeWeight"];
-        palette_id = sliders_value["palette_id"];
-        lines_strokeWeight = sliders_value["lines_strokeWeight"];
-        dots_strokeWeight = sliders_value["dots_strokeWeight"];
-        */
         palette = fixed_palette(palette_id);
         clear();
         background(random_color(palette));
-        //arr_dots = grid_create(sliders_value["rows"], sliders_value["rows_min"], sliders_value["rows_max"], width);
         arr_dots = grid_create(rows, rows_min, rows_max, width);
-        //grid_draw(arr_dots);
         grid_draw_triangles(arr_dots);
     }
 }
