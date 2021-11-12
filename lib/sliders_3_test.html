@@ -1,0 +1,91 @@
+<html>
+  <style>
+    .titol {
+      background-color: greenyellow;
+      color: black;
+      border: 2px solid black;
+      margin: 10px;
+      padding: 10px;
+    }
+    .instruccions {
+      color: black;
+      margin: 10px;
+      padding: 10px;
+      background-color:powderblue;
+    }
+    .lemon {
+      background-color: tomato;
+      color: white;
+      border: 2px solid black;
+      margin: 20px;
+      padding: 20px;
+    }
+  .dialeg {
+    border: 5px outset red;
+    background-color: lightblue;
+    text-align: center;
+    display: block;
+    }
+  .button {
+    border: 5px outset blue;
+    background-color: lightblue;
+    text-align: center;
+    }
+    </style>    
+
+  <head>
+      <script src="sliders_3.js" type="text/javascript"></script>
+      <!--script src="lib\sliders_2.js" type="text/javascript"></script-->
+      <script src="https://cdn.jsdelivr.net/npm/p5@vv1.4.0/lib/p5.js" type="text/javascript"></script>
+    </head>
+
+
+    <div class="titol" id='title'>
+      sliders_2 test
+    </div>
+
+
+    <!-- LOG CANVIS -->
+
+    <div class="instruccions" id='instruccions' >
+      <p>fet:</p>
+      <li>afegir sliders dinamicament des de un js </li>
+      <p>to do:</p>
+      <li>si esta en openprocessing fer servir OPC </li>
+    </div>
+
+    <!-- CODI PER TEST -->
+    
+    
+    <button class="button" name="button" type="button" onClick="sliders_show_toggle()">sliders_show_toggle()</button>
+    <p>div controls: </p>
+    <div class="dialeg" id="controls"></div>
+    <!-- CODI PER TEST -->
+    <script>
+
+      function setup() {
+
+          //sliders_initialize();
+          sliders_add(0, 10, 5, 1, "var1");   	
+          sliders_add(0, 20, 10, 1, "var2"); 
+          //sliders_format(400);
+      }
+
+      let last_old = false;
+      let last;
+      function draw() {
+
+        last = sliders_changed();
+        if (last != last_old && last != null) {
+          let var_value = sliders_value(last);
+          console.log("*** sliders_changed: " + last + " value: " + var_value);
+        }
+        last_old = last;
+
+      }
+
+
+    </script> 
+    
+  </body>
+</html>

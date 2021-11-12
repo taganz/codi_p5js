@@ -27,9 +27,11 @@
         // sliders_change() returns last var changed name
         //      resets change indicator, use only once in a draw() event
         
-    	if (sliders_changed()) {
+        let var_changed = sliders_changed();
+    	if (var_changed != null) {
 		
-            ... var1, var2...
+            
+            val = sliders_value(var_changed)
             
     
     draw() 
@@ -47,36 +49,26 @@
 
 //let _sliders_gui_need_refresh = true;
 let _sliders_output = new Array();
+let _sliders_last_changed = null;   // var_name for last slider changed
 let _sliders_font;
-let _sliders_div;
+//let _sliders_div;
 let _sliders_show = true;
 let _sliders_div;  
 let _sliders_changed_var_name = new Array();    // bool. last changed slider
+let _sliders_initialized = false;
 
-
+// load font
 function preload() {
    _sliders_font = loadFont('../assets/Inconsolata.otf');
 }
 
 // create div _sliders_div
-function sliders_initialize() {
-    
-    // crea _sliders_div
-
-    _sliders_div = document.createElement("div");
-    _sliders_div.style.alignItems = 'flex_start';
-    _sliders_div.style.background = "grey";
-    document.body.appendChild(_sliders_div);
-
-    // titol del div
-    const txt = document.createElement("P");
-    txt.innerHTML = "Change generation parameters";
-    _sliders_div.appendChild(txt);
-
-}
-
-
 function sliders_add(min, max, default_value, step, var_name) {
+
+    if (_sliders_initialized == false) {
+        _sliders_initialize();
+        _sliders_initialized = true;
+    }
 
     // create variable
     window[var_name] = default_value;
@@ -117,35 +109,52 @@ function sliders_add(min, max, default_value, step, var_name) {
 
 }
 
-// check if sliders have changed and *reset status*
-// 12/11/21 return changed var name or null if no changes
-function sliders_changed() {
-    let changed = false;
-    /*
-    if (_sliders_gui_need_refresh == true) {
-        _sliders_gui_need_refresh = false;
-        changed =  true;
-    }
-    else {
-        changed = false;
-    }
-    */
-    let var_name = _sliders_changed_var_name.find(true);
-    _sliders_changed_var_name.fill(false);
-    return var_name != undefined ? var_name : null;
+// returns value for slider with var_name
+function sliders_value(var_name) {
+    return Function("return " + var_name + ";")();
 }
 
+// return last changed slider or null. resets status
+function sliders_changed() {
+    let ret = _sliders_last_changed;
+    _sliders_last_changed = null;       // reset last change
+    return ret;
+}
 
+function _sliders_initialize() {
+    
+    // crea _sliders_div
+
+    _sliders_div = document.createElement("div");
+    _sliders_div.style.alignItems = 'flex_start';
+    _sliders_div.style.background = "grey";
+    document.body.appendChild(_sliders_div);
+
+    // titol del div
+    const txt = document.createElement("P");
+    txt.innerHTML = "Change generation parameters";
+    _sliders_div.appendChild(txt);
+
+
+}
 // Apply control panel settings (user inputs)
 function _sliders_change(id,value) {
     value=eval(value);
+    _sliders_last_changed = id;
     _sliders_output[id].innerHTML = value;   
     //console.log("sliders_changed slider: "+id+"  new value: "+value);
     window[id] = value;
    // _sliders_gui_need_refresh = true;
 
-   _sliders_changed_var_name.fill(false);  // reset all
+   //_sliders_changed_var_name.fill(false);  // reset all
+   for (const var_name in _sliders_changed_var_name) {
+    _sliders_changed_var_name[var_name] = false;    // reset all
+    }
+
+
+
     _sliders_changed_var_name[id] = true;
+   //print("sliders change id " + id + " to value: "+ value);
 
 }
 
