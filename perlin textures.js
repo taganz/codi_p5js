@@ -21,7 +21,7 @@ function setup() {
 function draw() {
 
     palette = fixed_palette(palette_id);
-
+    
     if (redraw)  {
         clear();
         background(220);
