@@ -1,0 +1,45 @@
+<html>
+<head>
+    <script src="grids.js" type="text/javascript"></script>
+    <script src="..\lib\palette.js" type="text/javascript"></script>
+    <script src="..\lib\keyboard.js" type="text/javascript"></script>
+    <script src="..\lib\sliders_3_1.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@vv1.4.0/lib/p5.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <script>
+
+        let canvas_size = 800;
+        let arr_dots;
+
+        function setup() {
+
+            the_canvas = createCanvas(canvas_size, canvas_size);
+            background('white');
+        
+            sliders_add(2, 35, 2, 1, "x");	
+            sliders_add(2, 20, 2, 1, "y");	
+            sliders_add(2, 35, 2, 1, "z");	
+            
+        }
+
+        function draw() {
+
+            if (sliders_changed()) {
+                clear();
+
+                arr_dots = grid_create(x, y, z, canvas_size);
+                //grid_draw(arr_dots);
+                grid_draw(arr_dots, color("red"), color("red"), color("red"), color("green"));
+
+                print(arr_dots[0]);
+            }
+        }
+
+
+    </script>
+
+</body>
+
+</html>

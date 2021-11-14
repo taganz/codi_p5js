@@ -1,0 +1,39 @@
+<html>
+    <head>
+    <script src="palette.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@vv1.4.0/lib/p5.js" type="text/javascript"></script>
+    <script>
+        let palette;
+        let c;
+        function setup(){
+            createCanvas(1200,1200);
+        }
+        function draw(){
+            let y = 0;
+            console.log("Testing palette");
+            for (let p = 0; p < palettes_set.length; p++) {
+                palette = palettes_set[p];
+                console.log("palette: "+palette);
+                let x = 0;
+                for (let n=0; n<palette.length;n++) {  
+                    c = fixed_color(n, palette);
+                    console.log("p: " + p + " n: " + n + " color: "+c + " len: "+palette.length + " i%len: "+ (n % palette.length));
+                    fill(c);
+                    square(x, y, 50);
+                    x+=50;
+                    if (x > 1000) {
+                        x = 0;
+                        y+=50;
+                    }
+                }
+            y+=55;
+            }
+            noLoop();
+        }
+    </script> 
+</head>
+<body>
+
+</body>
+
+</html>

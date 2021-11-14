@@ -1,0 +1,76 @@
+<html>
+    <head>
+    <script src="perlin_textures.js" type="text/javascript"></script>
+    <script src="..\lib\palette.js" type="text/javascript"></script>
+    <script src="..\lib\keyboard.js" type="text/javascript"></script>
+    <script src="..\lib\sliders_3.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@vv1.4.0/lib/p5.js" type="text/javascript"></script>
+</head>
+<body>
+    <script>
+        let palette;
+        let redraw = true;
+        let canvas_w;
+        let canvas_h;
+        let canvas_factor = 0.6;
+        function setup() {
+
+        canvas_w = windowWidth * canvas_factor;
+        canvas_h = windowHeight * canvas_factor;
+        createCanvas(canvas_w, canvas_h);
+
+        background('white');
+
+        //fill(random_color(palette))
+        sliders_add(0.01, 0.05, 0.02, 0.01, "k");
+        sliders_add(1, 10, 4, 1, "grain");
+        sliders_add(1, 500, 50, 5, "square_width");
+        sliders_add(1, 10, 9, 1, "palette_id");
+        sliders_add(10, 100, 30, 1, "color_range");
+        sliders_add(1, 20, 5, 1, "triangle_divisions");
+
+        }
+
+        function draw() {
+
+            let y, x;
+
+            palette_1 = ["f94144","f3722c","f8961e","f9c74f","90be6d","43aa8b","577590"];
+            ///palette_2 = ["03071e","370617","6a040f","9d0208","d00000","dc2f02","e85d04","f48c06","faa307","ffba08"];
+            palette_2 = ["898952","b2945b","d0e562","b6d369","93c48b"];
+            if (redraw)  {
+            clear();
+            background(220);
+            for (x = 0; x < canvas_w; x+= square_width) {
+                y = 0;
+                perlin_square(x, y, x + square_width, y + square_width, random_color(palette_1), k, grain, color_range);
+                y += square_width;
+                perlin_square(x, y, x + square_width, y + square_width, random_color(palette_2), k, grain, color_range);
+                y += square_width;
+                perlin_square(x, y, x + square_width, y + square_width, color("red"), k, grain, color_range);
+                y += square_width;
+                perlin_square(x, y, x + square_width, y + square_width, color("green"), k, grain, color_range);
+                y += square_width;
+                perlin_square(x, y, x + square_width, y + square_width, color("blue"), k, grain, color_range);
+                y += square_width;
+                perlin_square(x, y, x + square_width, y + square_width, color("yellow"), k, grain, color_range);
+
+            }
+            x = 0;
+            // triangle method 1
+            y += square_width * 2;
+            perlin_triangle(x, y, x + square_width*2, y, x+square_width, y + square_width*3, color("green"), k, grain, color_range);
+
+            // triangle method 2
+            y += square_width * 4;
+            perlin_triangle_2(x, y, x + square_width*2, y, x+square_width, y + square_width*3, color("green"), k, color_range, triangle_divisions);
+
+            }
+            redraw = sliders_changed() != null;
+ 
+        }
+    </script>
+
+</body>
+
+</html>
