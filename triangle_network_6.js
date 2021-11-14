@@ -1,4 +1,8 @@
 "use strict";
+/*
+ Inspired in Sol Lewitt's Complex Forms
+ https://www.artsy.net/artwork/sol-lewitt-complex-forms-set-of-5-1
+*/
 let sketch_name = "triangle_network_6";
 let canvas_size = 800;
 let arr_dots;
