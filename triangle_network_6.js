@@ -4,7 +4,7 @@
  https://www.artsy.net/artwork/sol-lewitt-complex-forms-set-of-5-1
 */
 let sketch_name = "triangle_network_6";
-let canvas_size = 800;
+let canvas_size = 1000;
 let arr_dots;
 let color_dots_1;
 let color_dots_2;
@@ -16,9 +16,14 @@ let lines_strokeWeight = 20;
 
 
 let palette = ["335c67","fff3b0","e09f3e","9e2a2b","540b0e"];
+let palette_camuflatge = ["585123","eec170","f2a65a","f58549","772f1a"];
+let palette_marrons = ["797d62","9b9b7a","baa587","d9ae94","f1dca7","ffcb69","e8ac65","d08c60","b58463","997b66"];
 let palette_verds = ["d8f3dc","b7e4c7","95d5b2","74c69d","52b788","40916c","2d6a4f","1b4332","081c15"];
 let palette_blaus = ["03045e","023e8a","0077b6","0096c7","00b4d8","48cae4","90e0ef","ade8f4","caf0f8"];
 let palette_color_0;
+
+
+palette = palette_camuflatge;
 
 			  
 function setup() {
@@ -33,12 +38,18 @@ function setup() {
     sliders_add(2, 35, 10, 1, "rows");	// 0
     sliders_add(2, 20, 15, 1, "rows_min");	
     sliders_add(2, 35, 14, 1, "rows_max");	
-    sliders_add(0, 2, 1, 1, "noise_mode");	
+    sliders_add(0, 3, 1, 1, "noise_mode");	
     sliders_add(0.001, 0.1, 0.05, 0.005, "perlin_k");	
+    sliders_add(1, 6, 2, 1, "grain");	
     
 	//palette = shuffle(palette);
     palette_color_0 = "#" + palette[0];
     palette = palette.slice(1, );
+
+    palette_verds = palette;
+    palette_blaus = palette;
+
+    background(palette_color_0);
 
 }
 
@@ -46,23 +57,24 @@ function setup() {
 function draw() {
 
     let ch = sliders_changed();
-    switch (ch) {
-        case "_first_":
-        case "rows":
-        case "rows_min":
-        case "rows_max":
-            arr_dots = grid_create(rows, rows_min, rows_max, width);
-		    // aixo es perque alguns triangles no es dibuixen be i almenys te fondo de la paletta
-		    fill(color(palette_color_0));
-		    square(0, 0, canvas_size); 
-        case "noise_mode":
-        case "perlin_k":
-        default:
-		    clear();
-            background(0);
-            grid_draw_triangles(arr_dots, noise_mode, perlin_k);
+    if (ch != null) {
+        switch (ch) {
+            case "_first_":
+            case "rows":
+            case "rows_min":
+            case "rows_max":
+                arr_dots = grid_create(rows, rows_min, rows_max, width);
+                // aixo es perque alguns triangles no es dibuixen be i almenys te fondo de la paletta
+                fill(color(palette_color_0));
+                square(0, 0, canvas_size); 
+            case "noise_mode":
+            case "perlin_k":
+            default:
+                clear();
+                background(palette_color_0);
+                grid_draw_triangles(arr_dots, noise_mode, perlin_k);
+        }
     }
-
 }
 
 
@@ -71,7 +83,6 @@ function draw() {
 // noise_mode:  0 = no noise, 1 = perlin triangles (fast), 2 = perlin dot level (slow)
 // k: perlin noise factor
 function grid_draw_triangles(a, noise_mode=0, k=0.005) {
-
 
     // lines to next rows
     //stroke(color_line_other_row);  
@@ -96,9 +107,12 @@ function grid_draw_triangles(a, noise_mode=0, k=0.005) {
                         perlin_triangle_2(dot_a.x, dot_a.y, dot_b.x, dot_b.y, dot_c.x, dot_c.y, col, k, 60, 12);
                     break;
                     case 2:
-                        perlin_triangle(dot_a.x, dot_a.y, dot_b.x, dot_b.y, dot_c.x, dot_c.y, col, k, 1, 30)
+                       perlin_triangle(dot_a.x, dot_a.y, dot_b.x, dot_b.y, dot_c.x, dot_c.y, col, k, grain, 30)
                         break;
-                    case 0:
+                    case 3:
+                        perlin_triangle_3(dot_a.x, dot_a.y, dot_b.x, dot_b.y, dot_c.x, dot_c.y, col, k, grain, 30)
+                            break;
+                        case 0:
                     default:                    
                         fill(col);
                         triangle(dot_a.x, dot_a.y, dot_b.x, dot_b.y, dot_c.x, dot_c.y);
@@ -119,7 +133,10 @@ function grid_draw_triangles(a, noise_mode=0, k=0.005) {
                         perlin_triangle_2(dot_a.x, dot_a.y, dot_b.x, dot_b.y, dot_c.x, dot_c.y, col, k, 60, 12)
                         break;
                     case 2:
-                        perlin_triangle(dot_a.x, dot_a.y, dot_b.x, dot_b.y, dot_c.x, dot_c.y, col, k, 1, 30)
+                        perlin_triangle(dot_a.x, dot_a.y, dot_b.x, dot_b.y, dot_c.x, dot_c.y, col, k, grain, 30)
+                        break;
+                    case 2:
+                        perlin_triangle_3(dot_a.x, dot_a.y, dot_b.x, dot_b.y, dot_c.x, dot_c.y, col, k, grain, 30)
                         break;
                     case 0:
                     default:                    
@@ -134,5 +151,6 @@ function grid_draw_triangles(a, noise_mode=0, k=0.005) {
     }
     
 }
+
 
 
