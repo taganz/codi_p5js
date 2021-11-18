@@ -34,14 +34,14 @@
     </style>    
 
   <head>
-      <script src="sliders_3_1.js" type="text/javascript"></script>
+      <script src="sliders_3_2.js" type="text/javascript"></script>
       <!--script src="lib\sliders_2.js" type="text/javascript"></script-->
       <script src="https://cdn.jsdelivr.net/npm/p5@vv1.4.0/lib/p5.js" type="text/javascript"></script>
     </head>
 
 
     <div class="titol" id='title'>
-      sliders_2 test
+      sliders test
     </div>
 
 
@@ -49,10 +49,11 @@
 
     <div class="instruccions" id='instruccions' >
       <p>VEURE EN CONSOLA</p>
-      <p>fet:</p>
+      <p>v: sliders_3_2</p>
       <li>afegir sliders dinamicament des de un js </li>
       <li>si esta en openprocessing fer servir OPC </li>
       <li>sliders_changed() sempre torna true el primer cop que es crea </li>
+      <li>per defecte estan apagats, cal fer sliders_show_toggle(true)</li>
       <p>to do:</p>
       <li>...</li>
     </div>
@@ -61,6 +62,8 @@
     
     
     <button class="button" name="button" type="button" onClick="sliders_show_toggle()">sliders_show_toggle()</button>
+    <button class="button" name="button" type="button" onClick="sliders_show_toggle(true)">sliders_show_toggle(true)</button>
+    <button class="button" name="button" type="button" onClick="sliders_show_toggle(false)">sliders_show_toggle(false)</button>
     <p>div controls: </p>
     <div class="dialeg" id="controls"></div>
     <!-- CODI PER TEST -->
@@ -68,18 +71,22 @@
 
       function setup() {
 
+          
+          sliders_activate(); // call this first in order to show sliders
 
           sliders_add(0, 10, 5, 1, "var1");   	
           sliders_add(0, 20, 10, 1, "var2"); 
-          //sliders_format(400);
+          
       }
 
       let last_old = false;
       let last;
+      1
       function draw() {
 
         last = sliders_changed();
         if (last != last_old && last != null) {
+          
           if (last == '_first_') {
             console.log("---first call--- ")
           }
