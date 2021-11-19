@@ -15,8 +15,10 @@ function setup() {
 	// sites_number = random(20, 150);
 
 	sliders_activate();
-	sliders_add(1, 300, 250, 1, "sites_number");
-	sliders_add(1, 200, 30, 1, "sites_distance");
+	sliders_add(1, 300, 50, 1, "sites_number");  //250
+	sliders_add(0, 1, 1, 1, "sites_mode");
+	sliders_add(1, 200, 25, 1, "sites_distance");
+	sliders_add(0, 1, 1, 1, "jitter");		// generates voroi with jitter
 	sliders_add(0, 1, 0, 1, "refresh_diagram");
 	sliders_add(0, 1, 0, 1, "draw_original_colors");
 	sliders_add(0, 1, 1, 1, "draw_edges");
@@ -45,14 +47,11 @@ function draw() {
 		switch (slid) {
 			
 			case "_first_":
-			case "sites_number_value":
-			case "sites_distance_value":
+			case "sites_number":
+			case "sites_distance":
 			case "refresh_diagram":
-				//Sets 30 random sites with 50 minimum distance to be added upon computing
-				//Please note that this method is just for testing, you should use your own
-				//method for placing random sites with minimum distance
-				voronoiRndSites(sites_number, sites_distance);
-
+			case "sites_mode":
+				voronoi_add_sites(sites_mode, w, h, sites_number, sites_distance);
 				//Compute voronoi diagram with size 700 by 500
 				//With a prepared jitter structure (true)
 				voronoi(w, h, true);
@@ -66,8 +65,9 @@ function draw() {
 			case "draw_edges":
 			case "draw_center_lines":
 			case "draw_original_colors":
+			case "jitter":
 			default:
-				voronoiDraw(0, 0, draw_original_colors==1 , false);  // parametres: Filled, jitter
+				voronoiDraw(0, 0, draw_original_colors==1 , jitter==1);  // parametres: Filled, jitter
 				if (draw_edges == 1) {
 					draw_diagram_edges(diagram);
 				}
@@ -84,6 +84,37 @@ function draw() {
 }
 
 
+function voronoi_add_sites(mode, w, h, number, minimum_distance){
+	switch(mode) {
+		default:
+			console.log("*** voronoi_add_sites ERROR drawing default");
+		case 0:
+			console.log("*** voronoi_add_sites mode: random");
+			//Sets  random sites with  minimum distance to be added upon computing
+			//Please note that this method is just for testing, you should use your own
+			//method for placing random sites with minimum distance
+			voronoiClearSites();
+			voronoiRndSites(sites_number, minimum_distance);
+			break;
+		case 1:
+			console.log("*** voronoi_add_sites mode: focused");
+			let sites = new Array(10);
+			let center_margin = random(0.1, 0.2);
+			let center = [random(w*center_margin, w*(1-center_margin)), random(h*center_margin, h*(1-center_margin))];
+			let radius = random(w*0.3, w*0.8);
+			for (let i = 0; i < number; i++) {
+				let x = center[0] + radius * random();
+				let y = center[1] + radius * random();
+				sites[i] = [x, y, "#aae4f2"];
+			}
+			voronoiClearSites();
+			voronoiSites(sites);
+			break;
+		case 2:
+			break;
+
+	}
+}
 function draw_diagram_edges(diagram) {
 	strokeWeight(5);
 	stroke('200');
@@ -123,7 +154,7 @@ function draw_site_centers(diagram) {
 // dibuixa una linia des de cada vertex al centre
 function draw_line_site_vertex(diagram) {
 
-	stroke('red');
+	stroke('white');
 	strokeWeight(1);
 
 	// per cada cel.la
