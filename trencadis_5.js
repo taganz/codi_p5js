@@ -9,29 +9,30 @@ let w = 700;
 let h = 700;
 let background_color;
 let palette_1 = ["ee4266","ffd23f","3bceac","2579f5"];
+let palette_2 = ["0466c8","0353a4","023e7d","002855","001845","001233","33415c","5c677d","7d8597","979dac"];
 let palette;
 
-let color_cell_stroke = 180;
+let color_separation = 250;
 
 function setup() {
 
 
 	sliders_activate();
 	sliders_add(0, 1, 0, 1, 	"refresh_diagram");
-	sliders_add(3, 500, 470, 1,	"sites_number");  //250
+	sliders_add(3, 500, 186, 1,	"sites_number");  //250
 	sliders_add(0, 1, 0, 1,		"sites_mode", true, "0: random, 1: focus?");
-	sliders_add(0, 5, 2, 1, 	"draw_mode", true, "0: std, 1,2,3: grad, 4: ..., 5: jitter");  
+	sliders_add(0, 6, 6, 1, 	"draw_mode", true, "0: std, 1,2,3: grad, 4: ..., 5: std jitter, 6:broken");  
 
 	sliders_add(1, 200, 25, 1, 	"sites_distance", false); // TREURE
 
 	//sliders_add(0, 1, 0, 1, 	"draw_original_colors");
-	sliders_add(0, 1, 0, 1, 	"add_edges", true, "1: draw additional edges over diagram");
+	sliders_add(0, 1, 1, 1, 	"add_edges", true, "1: draw additional edges over diagram");
 	sliders_add(0, 20, 4, 1, 	"add_edges_stroke_weight");
 	sliders_add(0, 1, 0, 1, 	"add_lines_to_site");
 	sliders_add(0, 1, 0, 1, 	"add_sites");
 	sliders_add(0, 1, 1, 1, 	"draw_jitter");		// draws voroi with jitter
 	sliders_add(1, 50, 2, 1, 	"draw_perlin_grain");
-	sliders_add(0, 1, 0, 1, 	"draw_palette_mode");
+	sliders_add(0, 2, 2, 1, 	"draw_palette_mode");
 	sliders_add(0, 1, 0, 1, 	"draw_color_grade_on");
 	sliders_add(0, 30, 15, 1, 	"jitter_step_max");
 	sliders_add(0, 30, 5, 1, 	"jitter_step_min");
@@ -51,7 +52,7 @@ function draw() {
 	if (slid != null) {
 
 		background_color = color('#0c6ca8');
-		background(200);
+		background(color_separation);
 		clear();
 		fill(background_color);
 		quad(0, 0,  0, h, w, h, w, 0);
@@ -115,6 +116,9 @@ function draw() {
 					case 1:  // blue
 						palette = ["047bdb"];
 						break;
+					case 2:  // blue
+						palette = palette_2;
+						break;
 				}
 
 				voronoiSiteFlag(add_sites); // - dibuixar els centres
@@ -170,7 +174,7 @@ function voronoi_add_sites(mode, w, h, number, minimum_distance){
 }
 function draw_diagram_edges(diagram) {
 	strokeWeight(add_edges_stroke_weight);
-	stroke(230);
+	stroke(color_separation);
 	for (let i = 0; i < diagram.edges.length; i++) {
 		line(diagram.edges[i].va.x, diagram.edges[i].va.y, diagram.edges[i].vb.x, diagram.edges[i].vb.y);
 	}
@@ -262,7 +266,7 @@ function draw_diagram(diagram, mode=0, palette, color_grade_on) {
 		case 1:   // solid color - with grade 
 			console.log("draw_diagram mode 1 - solid color");
 			for (let i = 0; i < cells.length; i++) {
-				if (diagram.cells[i] != null) {
+				if (cells[i] != null) {
 					let c = fixed_color(i, palette);
 					if (color_grade_on == 0) {
 						fill(red(c), green(c), blue(c));
@@ -335,8 +339,8 @@ function draw_diagram(diagram, mode=0, palette, color_grade_on) {
 				}
 			}
 			break;
-		case 5:	 //  broken cells
-			console.log("draw_diagram mode 5 - broken cells");
+		case 5:	 //  std jitter
+			console.log("draw_diagram mode 5 - std jitter");
 			//noStroke();
 			for (let i = 0; i < cells.length; i++) {
 				if (diagram.cells[i] != null) {
@@ -346,16 +350,53 @@ function draw_diagram(diagram, mode=0, palette, color_grade_on) {
 					//stroke('white');
 
 					voronoiSiteStrokeWeight(10);
-					voronoiSiteStroke(255);
+					voronoiSiteStroke(color_separation);
 
 					voronoiCellStrokeWeight(10);
-					voronoiCellStroke(color_cell_stroke);
+					voronoiCellStroke(color_separation);
 					let cell = diagram.cells[i];
 					let s = cell.site;
 					let offset = 0;
 					voronoiDrawCell(s.x , s.y , i, VOR_CELLDRAW_SITE, false, true);
 					//voronoiDrawCell(s.x + (s.x-w/2) * offset , s.y + (s.y-h/2)*offset, i, VOR_CELLDRAW_BOUNDED, true, true);
 						//drawCellSite((cell.site.x-w) * 1.05 , (cell.site.y-h)*1.05, i, cell.site.x, cell.site.y, false, true);
+				}
+			}
+			break;
+		case 6:   // broken
+			console.log("draw_diagram mode 6 - broken");
+			//noStroke();
+			// per cada cel.la
+			clear();
+			noStroke();
+			fill(color_separation);
+			quad(0, 0,  0, h, w, h, w, 0);
+			//voronoiCellStroke(255);
+			//voronoiCellStrokeWeight(10);
+
+			for (let i = 0; i < cells.length; i++) {
+				if (cells[i] != null) {
+					// per cada vertex pinta el triangle dels dos seguents
+					let c = fixed_color(i, palette);
+					if (color_grade_on) {
+						fill(random(43, 208), green(c), blue(c));
+					}
+					else {
+						fill(red(c), green(c), blue(c));
+					}
+					beginShape();
+					//let vertex_to_change = floor(random(0, cells[i].length-1));
+					for (let j = 0; j < cells[i].length; j++) {
+						let A = {x: cells[i][j][0] , y: cells[i][j][1]};
+						if (j < cells[i].length-1) {
+							let shift_ratio = random(0, 0.3);
+							let B = {x: cells[i][j+1][0] , y: cells[i][j+1][1]};
+							A.x += (B.x - A.x) * shift_ratio;
+							A.y += (B.y - A.y) * shift_ratio;
+						}
+						vertex(A.x, A.y);
+					}
+					endShape(CLOSE);
 				}
 			}
 			break;
