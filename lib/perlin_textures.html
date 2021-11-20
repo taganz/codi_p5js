@@ -66,14 +66,25 @@
             perlin_triangle(x, y, x + square_width*2, y, x+square_width, y + square_width*3, coltriangles, k, 1, color_range);
 
             // fill triangle method 2 - triangle subdivision - FASTEST, LOW QUALITY
-            x = 200;
+            x = 150;
             y += 0;
             perlin_triangle_2(x, y, x + square_width*2, y, x+square_width, y + square_width*3, coltriangles, k, color_range, triangle_divisions);
 
             // fill triangle method 3 - fill triangle with perlin noise (lines) - SLOWEST, BEST QUALITY
-            x = 400;
+            x = 300;
             y += 0;
             perlin_triangle_3(x, y, x + square_width*2, y, x+square_width, y + square_width*3, coltriangles, k, 1, color_range);
+
+            y += square_width * 3;
+
+            x = 0;
+            perlin_triangle(x, y, x + square_width*2, y, x+square_width, y + square_width*3);
+
+            x = 150;
+            perlin_triangle_2(x, y, x + square_width*2, y, x+square_width, y + square_width*3);
+
+            x = 300;
+            perlin_triangle_3(x, y, x + square_width*2, y, x+square_width, y + square_width*3);
 
             }
             redraw = sliders_changed() != null;

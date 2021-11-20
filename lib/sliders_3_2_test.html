@@ -74,8 +74,10 @@
           
           sliders_activate(); // call this first in order to show sliders
 
-          sliders_add(0, 10, 5, 1, "var1");   	
-          sliders_add(0, 20, 10, 1, "var2"); 
+          sliders_add(0, 10, 5, 1, "var1", true );   	
+          sliders_add(0, 20, 10, 1, "var2", true, "txt help for var2"); 
+          sliders_add(0, 10, 5, 1, "var3", false );   	
+          sliders_add(0, 20, 10, 1, "var4", false, "txt help for var4"); 
           
       }
 
