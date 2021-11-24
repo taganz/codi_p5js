@@ -28,6 +28,24 @@
                 }
             y+=55;
             }
+
+
+            y +=55;
+            palette = palette_from_url("https://coolors.co/264653-2a9d8f-e9c46a-f4a261-e76f51");
+            let x = 0;
+            for (let n=0; n<palette.length;n++) {  
+                    c = fixed_color(n, palette);
+                    console.log("PALETTE FROM URL  n: " + n + " color: "+c + " len: "+palette.length + " i%len: "+ (n % palette.length));
+                    fill(c);
+                    square(x, y, 50);
+                    x+=50;
+                    if (x > 1000) {
+                        x = 0;
+                        y+=50;
+                    }
+                }
+
+
             noLoop();
         }
     </script> 
