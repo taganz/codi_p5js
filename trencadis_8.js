@@ -16,13 +16,20 @@ let palette;
 let color_separation = 250;
 let img;
 let dots;
+let moving_cell;
+let moving_dot;
+let image_loaded = false;
+let input;
 
+let path = 'https://www.rdalmau.com/codi_p5js/assets/image/';
+let loaded_image_path;
+
+// load img
 function preload() {
 	
-    //img = loadImage('assets/image/flower.png');
+	
     let img_file = new Array();
 	//let path = 'assets/image/';
-	let path = 'https://www.rdalmau.com/codi_p5js/assets/image/';
 	img_file=['victor roc avi 2.png',
     			'Adhesiu_PARK_GUELL.jpg',
     			'laura_i_victor.png',
@@ -33,72 +40,71 @@ function preload() {
 				];
     let i = img_file.length -1;
 	img = loadImage(path + img_file[i]);
+	console.log("PRIMERA IMATGES CARREGADA img: ", img);
 	
-   // sliders_preload();
+	sliders_preload();
+   
+
 }
 
 function setup() {
 
 
-;
-
-	print("Image size: " +img.width + ' • ' + img.height);
 
     sliders_activate();
     sliders_add(1, 30, 2, 1,  "dot_size", false);  
-    sliders_add(1, 100, 11, 1, "sample_rate"); 
+    sliders_add(1, 100, 15, 1, "sample_rate"); 
     sliders_add(0.25, 3, 0.75, 0.25, "image_zoom"); 
 	sliders_add(0.001, 0.1, 0.025, 0.001, "sample_distortion"); 
+	sliders_add(0, 3, 0, 0.1, "break_factor"); 
+	sliders_add(0, 3000, 0, 100, "refresh_time"); 
 
 	sliders_add(0, 1, 0, 1, 	"refresh_diagram", false, "HO TRENCA!");
-	sliders_add(3, 500, 3, 1,	"sites_number", false, "HO TRENCA!");  //250
 	sliders_add(0, 3, 3, 1,		"sites_mode", false, "0: random, 1: focus?, 2:move, 3: image");
 	sliders_add(7, 8, 8, 1, 	"draw_mode", true, "0: std, 1,2,3: grad, 4: ..., 5: std jitter, 6:broken, 7: diagram color, 8:image broken");  
 
-	sliders_add(1, 200, 25, 1, 	"sites_distance", false); // TREURE
-
-	//sliders_add(0, 1, 0, 1, 	"draw_original_colors");
-	sliders_add(0, 1, 0, 1, 	"add_edges", false, "1: draw additional edges over diagram");
-	sliders_add(0, 20, 0, 1, 	"add_edges_stroke_weight", false);
-	sliders_add(0, 1, 0, 1, 	"add_lines_to_site", false);
-	sliders_add(0, 1, 0, 1, 	"add_sites", false);
-	sliders_add(0, 1, 1, 1, 	"draw_jitter", false);		// draws voroi with jitter
+	
+	sliders_add(0, 1, 1, 1, 	"add_edges", true, "1: draw additional edges over diagram");
+	sliders_add(0, 20, 0, 1, 	"add_edges_stroke_weight", true);
+	//sliders_add(0, 1, 0, 1, 	"add_sites", false);
 	sliders_add(1, 50, 2, 1, 	"draw_perlin_grain", false);
 	sliders_add(0, 2, 0, 1, 	"draw_palette_mode", false, "0.color?, 1: blue, 2:graded");
 	sliders_add(0, 1, 0, 1, 	"draw_color_grade_on", false);
-	sliders_add(0, 30, 15, 1, 	"jitter_step_max", false);
-	sliders_add(0, 30, 5, 1, 	"jitter_step_min", false);
-	sliders_add(0, 10, 2, 1, 	"jitter_factor", false);
 
+	// debug
+	sliders_add(0, 1, 0, 1, 	"add_lines_to_site", true);
+	
 
 	
-	let voronoi_w = img.width / image_zoom;
-	let voronoi_h = img.height / image_zoom;
+		
+	voronoi_w = img.width / image_zoom;
+	voronoi_h = img.height / image_zoom;
 	createCanvas(min(w, voronoi_w), min(voronoi_h, h));
 	noSmooth();
 
-
+	input = createFileInput(handleFile);
+	input.position(0, 0);
 
 }
+
+
 
 let step = 0;
 
 function draw() {
 
+	// detect sliders changes
+
 	let slid = sliders_changed();
 
-	if (slid != null) {
+	if (slid != null || image_loaded ) {
+		
+		if (image_loaded) {
+			slid = "_first_";
+			image_loaded = false; // reset
+		}
 
-		let voronoi_w = img.width / image_zoom;
-		let voronoi_h = img.height / image_zoom;
-		background_color = color('#0c6ca8');
-		background(color_separation);
-		clear();
-		fill(color_separation);
-		//quad(0, 0,  0, h, w, h, w, 0);
-		quad(0, 0,  0, voronoi_h, voronoi_w, voronoi_h, voronoi_w, 0);
-		strokeWeight(1);
-				
+
 		switch (slid) {
 			
 			case "_first_":
@@ -106,63 +112,44 @@ function draw() {
 			case "sample_rate":
 			case "image_zoom":
 			case "sample_distortion":
-				console.log("IMAGE DOTS SAMPLED: starting... ");
+
 				//
 				// sample image and get dots array
 				//
+				console.log("Imge size: " + img.width + ' • ' + img.height +".  Sampling... ");
 				dots = image_dots_sample(img, sample_rate, img.width/ image_zoom, img.height / image_zoom, sample_distortion);
-				console.log("IMAGE DOTS SAMPLED: length "+ dots.length);
-				console.log("dots: ", dots);
-				//	image_dots_draw(dots, dot_size);
-				//sleep(1000);
+				console.log("Sampled.  "+ dots.length + " dots");
+				
 	
-			case "sites_number":
-			case "sites_distance":
 			case "refresh_diagram":
 			case "sites_mode":
-			case "jitter_step_max":
-			case "jitter_step_min":
-			case "jitter_factor":
 
 
-				// configure jitter
+				// 
+				// generate voronoi diagram
+				//
 
-				voronoiJitterStepMax(jitter_step_max); //Maximum distance between jitters
-				voronoiJitterStepMin(jitter_step_min); //Minimum distance between jitters
-				voronoiJitterFactor(jitter_factor); //Scales each jitter
-				voronoiJitterBorder(true); //Jitter edges of diagram
-
-
-				// add sites 
-
-				//voronoi_add_sites(sites_mode, w, h, sites_number, sites_distance, dots);
-				voronoi_add_sites(sites_mode, img.width, img.height, sites_number, sites_distance, dots);
-
-				// compute voronoi diagram and get handler
-				console.log("generation voroni: ", voronoi_w, voronoi_h);
-				voronoi(voronoi_w, voronoi_h, true);
+				
+				console.log("generating voroni: ", voronoi_w, voronoi_h, "...");
+				voronoiClearSites();
+				voronoiSites(dots);
+				voronoi(voronoi_w, voronoi_h, false); // no jitter
+				console.log("voroni generated.");
 				diagram = voronoiGetDiagram();
-				console.log("diagram: ", diagram);
+				//console.log("diagram: ", diagram);
 			
+				// reset step counter
 				step = 0;
 
-				// debug logs
-
-				//console.log(diagram);
-				//diagram_log_console(diagram);
-				//cells_log_console(diagram_cells);
-				//console.log(voronoiGetCellsJitter());
+				
 
 
 			// options that doesn't requiere graf regeneration
 
 			case "add_edges":
-			case "add_lines_to_site":
-			//case "draw_original_colors":
-			case "add_edges_stroke_weight":
+			//case "add_lines_to_site":
+			//case "add_edges_stroke_weight":
 			case "draw_mode":
-			case "draw_jitter":
-			case "add_sites":
 			case "draw_palette_mode":
 			case "draw_color_grade_on":
 			default:
@@ -179,120 +166,101 @@ function draw() {
 						break;
 				}
 
-				voronoiSiteFlag(add_sites); // - dibuixar els centres
+				
 
-
-				// draw diagram
-
-				draw_diagram(diagram, draw_mode, palette, draw_color_grade_on);
-
-
-				if (add_edges == 1) {
-					draw_diagram_edges(diagram);
-				}
-				if (add_lines_to_site== 1) {
-					draw_line_site_vertex(diagram);
-				//	draw_site_centers(diagram);
-				}
 		}
+
+
 	}
 
-
-	/*  move 
-
-	sleep(150);
-	if (sites_mode == 2 ) {
-		background_color = color('#0c6ca8');
-		background(color_separation);
-		clear();
-		fill(background_color);
-		quad(0, 0,  0, h, w, h, w, 0);
-		strokeWeight(2);
-		voronoiSiteFlag(add_sites); // - dibuixar els centres
-		voronoiSiteStroke(0);
-		
-		voronoi_add_sites(sites_mode, w, h, sites_number, sites_distance);
-		// compute voronoi diagram and get handler
-		voronoi(w, h, true);
-		diagram = voronoiGetDiagram();
-		draw_diagram(diagram, draw_mode, palette, draw_color_grade_on);
-		//noLoop();
-	}
-	*/
 	
+	// move some dots
+
+	image_dots_move(dots, 1, step);
+
+
+	// regenerate voronoi diagram
+
+	voronoiClearSites();
+	voronoiSites(dots);
+	voronoi(voronoi_w, voronoi_h, false); // no jitter
+	//console.log("voroni regenerated step ", step);
+	diagram = voronoiGetDiagram();
+
+
+	// draw diagram
+
+	background_color = color('#0c6ca8');
+	background(color_separation);
+	clear();
+	fill(color_separation);
+	quad(0, 0,  0, voronoi_h, voronoi_w, voronoi_h, voronoi_w, 0);
+	strokeWeight(1);
+
+	draw_diagram(diagram, draw_mode, palette, draw_color_grade_on, break_factor);
+	stroke('red');
+	strokeWeight(5);
+	noFill();
+
+	
+
+	// debug draw tools
+
+	if (add_edges == 1) {
+		draw_diagram_edges(diagram);
+	}
+	if (add_lines_to_site== 1) {
+		draw_line_site_vertex(diagram);
+	}				
+
+	sleep(refresh_time);
+	step ++;
+		
 }
 
-function sleep(milliseconds) {
-	const date = Date.now();
-	let currentDate = null;
-	do {
-	  currentDate = Date.now();
-	} while (currentDate - date < milliseconds);
-  }
+function loadImage_success() {
+	console.log("loadImage_success: ", loaded_image_path, img.width, img.height);
+	image_loaded = true;
+	//loaded_image_path = null;	// reset
+}
+function loadImage_failure() {
+	console.log("*** loadImage_failure ***");
+}
 
-function voronoi_add_sites(mode, w, h, number, minimum_distance, dots){
-	switch(mode) {
-		default:
-			console.log("*** ERROR *** voronoi_add_sites mode ", mode);
-			break;
-		case 0: print("*** voronoi_add_sites mode 0 random");
-			//Sets  random sites with  minimum distance to be added upon computing
-			//Please note that this method is just for testing, you should use your own
-			//method for placing random sites with minimum distance
-			voronoiClearSites();
-			voronoiRndSites(sites_number, minimum_distance);
-			break;
-		case 1: print("*** voronoi_add_sites mode 1 focused");
-			let sites = new Array(number);
-			let center_margin = random(0.1, 0.2);
-			let center = [random(w*center_margin, w*(1-center_margin)), random(h*center_margin, h*(1-center_margin))];
-			let radius = random(w*0.3, w*0.8);
-			for (let i = 0; i < number; i++) {
-				let x = center[0] + radius * random();
-				let y = center[1] + radius * random();
-				sites[i] = [x, y, "#aae4f2"];
+function handleFile(file) {
+	console.log("HANDLEFILE file.name:", file.name)
+	if (file.type === 'image') {
+		loaded_image_path = path+file.name; 
+		console.log("loaded_image_path: ", loaded_image_path);
+		img = loadImage(loaded_image_path, loadImage_success, loadImage_failure  );   // async
+	} else {
+	  img = null;
+	  console.log("*** Image algo raro ha passat ***");
+	}
+  }
+  
+
+
+// <---- 
+function sites_move(dots) {
+
+		// recupera sites antics
+		let old_sites = new Array();
+		let cells  = diagram.cells;
+		print("cells", cells);
+		for (let i = 0; i < cells.length; i++){
+			old_sites.push([cells[i].site.x, cells[i].site.y]);
+			print("old sites for i=" + i +": " + old_sites[i]);
+			print("cells[i].site.x ="+ cells[i].site.x);
+			print("cells[i].site.y ="+ cells[i].site.y);
+			
+			if (i == 2) {
+				old_sites[i][0] += 5;
+				old_sites[i][1] += 5;
 			}
-			voronoiClearSites();
-			voronoiSites(sites);
-			break;
-		case 2: print("*** voronoi_add_sites mode 2 move previous site");
-			// first time random
-			if (diagram == null){
-				voronoiClearSites();
-				voronoiRndSites(sites_number, minimum_distance);
-			}
-			else {
-				// recupera sites antics
-				let old_sites = new Array();
-				let cells  = diagram.cells;
-				print("cells", cells);
-				for (let i = 0; i < cells.length; i++){
-					old_sites.push([cells[i].site.x, cells[i].site.y]);
-					print("old sites for i=" + i +": " + old_sites[i]);
-					print("cells[i].site.x ="+ cells[i].site.x);
-					print("cells[i].site.y ="+ cells[i].site.y);
-					
-					if (i == 2) {
-						old_sites[i][0] += 5;
-						old_sites[i][1] += 5;
-					}
-				}
-				print(diagram);
-				print("old_sites: ", old_sites);
-				voronoiClearSites();	
-				voronoiSites(old_sites);
-				//for (let i = 0; i < old_sites.length; i++){
-				//	voronoiSite(old_sites[i][0], old_sites[i][1]);
-				//	voronoiSite(old_sites[i][0], old_sites[i][1]);
-				//}
-			}
-			break;
-			case 3: print("*** voronoi_add_sites mode 3 image");
-				voronoiClearSites();
-				voronoiSites(dots);
-			break;
 		}
 }
+
 function draw_diagram_edges(diagram) {
 	strokeWeight(add_edges_stroke_weight);
 	stroke(color_separation);
@@ -300,35 +268,6 @@ function draw_diagram_edges(diagram) {
 		line(diagram.edges[i].va.x, diagram.edges[i].va.y, diagram.edges[i].vb.x, diagram.edges[i].vb.y);
 	}
 }
-
-function cells_log_console(cells) {
-	console.log("cells_log_console--------------------");
-	for (let i = 0; i < cells.length; i++) {
-		console.log(cells[i]);
-	}
-}
-
-function diagram_log_console(diagram) {
-	console.log("diagram_log_console--------------------");
-	for (let i = 0; i < diagram.cells.length; i++) {
-		console.log(diagram.cells[i]);
-	}
-}
-
-/*
-// dibuixa un cercle a cada site
-function draw_site_centers(diagram) {
-
-	strokeWeight(1);
-	fill ('red');
-	noFill();
-	for (let i = 0; i < diagram.cells.length; i++) {
-		let x = diagram.cells[i].site.x;
-		let y = diagram.cells[i].site.y;
-		circle (x,y, 15);
-	}
-}
-*/
 
 
 // dibuixa una linia des de cada vertex al centre
@@ -375,7 +314,8 @@ function draw_line_site_vertex(diagram) {
 // pinta les cel.les
 // - mode 0: solid color from global palette
 // - mode 1: variations from global palette
-function draw_diagram(diagram, mode=0, palette, color_grade_on) {
+// - mode 2: perlin
+function draw_diagram(diagram, mode=0, palette, color_grade_on, break_factor = 0.3) {
 
 	let cells = voronoiGetCells();;
 	switch(mode){
@@ -460,30 +400,6 @@ function draw_diagram(diagram, mode=0, palette, color_grade_on) {
 				}
 			}
 			break;
-		case 5:	 //  std jitter
-			console.log("draw_diagram mode 5 - std jitter");
-			//noStroke();
-			for (let i = 0; i < cells.length; i++) {
-				if (diagram.cells[i] != null) {
-					// per cada vertex pinta el triangle dels dos seguents
-					let c = fixed_color(i, palette);
-					//strokeWeight(5);
-					//stroke('white');
-
-					voronoiSiteStrokeWeight(10);
-					voronoiSiteStroke(color_separation);
-
-					voronoiCellStrokeWeight(10);
-					voronoiCellStroke(color_separation);
-					let cell = diagram.cells[i];
-					let s = cell.site;
-					let offset = 0;
-					voronoiDrawCell(s.x , s.y , i, VOR_CELLDRAW_SITE, false, true);
-					//voronoiDrawCell(s.x + (s.x-w/2) * offset , s.y + (s.y-h/2)*offset, i, VOR_CELLDRAW_BOUNDED, true, true);
-						//drawCellSite((cell.site.x-w) * 1.05 , (cell.site.y-h)*1.05, i, cell.site.x, cell.site.y, false, true);
-				}
-			}
-			break;
 		case 6:   // broken
 			console.log("draw_diagram mode 6 - broken");
 			//noStroke();
@@ -526,12 +442,9 @@ function draw_diagram(diagram, mode=0, palette, color_grade_on) {
 			voronoiDraw(0, 0, true , draw_jitter==1);  
 			break;
 			
-		case 8:   console.log("draw_diagram mode 8 - image broken");
+		case 8:   //console.log("draw_diagram mode 8 - image broken");
 			noStroke();
-			//fill(color_separation);
-			//quad(0, 0,  0, voronoi_h, voronoi_w, voronoi_h, voronoi_w, 0);
-			//console.log("cells: ", cells)
-			console.log("diagram: ", diagram);
+
 			for (let i = 0; i < cells.length; i++) {
 				let c = voronoiGetColor(i);
 				fill(red(c), green(c), blue(c));
@@ -542,7 +455,7 @@ function draw_diagram(diagram, mode=0, palette, color_grade_on) {
 					for (let j = 0; j < cells[i].length; j++) {
 							let A = {x: cells[i][j][0] , y: cells[i][j][1]};
 						if (j < cells[i].length-1) {
-							let shift_ratio = random(0, 0.3);
+							let shift_ratio = random(0, break_factor);
 							let B = {x: cells[i][j+1][0] , y: cells[i][j+1][1]};
 							A.x += (B.x - A.x) * shift_ratio;
 							A.y += (B.y - A.y) * shift_ratio;
@@ -559,22 +472,49 @@ function draw_diagram(diagram, mode=0, palette, color_grade_on) {
 		default:
 			console.log("*** ERROR *** draw_diagram mode unknown "+mode);
 		}
-	//print(diagram.cells[i]);
-	//print(vv);
+
 }
 
 
 
-// https://stackoverflow.com/questions/4912788/truncate-not-round-off-decimal-numbers-in-javascript/4912870
-function truncateDecimals (number, digits) {
-    let multiplier = Math.pow(10, digits),
-        adjustedNum = number * multiplier,
-        truncatedNum = Math[adjustedNum < 0 ? 'ceil' : 'floor'](adjustedNum);
-
-    return truncatedNum / multiplier;
-};
 
 
+
+
+/*
+--------------------------------------
+	image_dots
+
+		array [x, y, color]
+			x,y en espai target_w x target_h
+
+--------------------------------------
+*/
+
+// move dots
+function image_dots_move(dots, mode, step) {
+
+	switch (mode) {
+		case 0:  // move 30
+			moving_dot = dots[30];
+			moving_dot[0] += random(-3, 3);
+			moving_dot[1] += random(-3, 3);
+			break;
+		case 1:  // move random
+			if (step > 50) {
+				let v_x = 10;
+				let v_y = 35 * step/100;
+				for (let i = 1; i < 10; i++ ) {
+					moving_dot = dots[Math.floor(random(0, dots.length))];
+					moving_dot[0] += random(-v_x, v_x);
+					moving_dot[1] += random(-10, v_y);
+				}
+			}
+			break;
+		default:
+	}
+}
+	
 
 // returns an array of dots {x, y, color}
 // 
@@ -608,3 +548,30 @@ function image_dots_draw(dots, dot_size = 1) {
     }
 
 }
+
+
+/*
+--------------------------------------
+	util		
+--------------------------------------
+*/
+
+// util
+function sleep(milliseconds) {
+	const date = Date.now();
+	let currentDate = null;
+	do {
+	  currentDate = Date.now();
+	} while (currentDate - date < milliseconds);
+  }
+  
+// https://stackoverflow.com/questions/4912788/truncate-not-round-off-decimal-numbers-in-javascript/4912870
+function truncateDecimals (number, digits) {
+    let multiplier = Math.pow(10, digits),
+        adjustedNum = number * multiplier,
+        truncatedNum = Math[adjustedNum < 0 ? 'ceil' : 'floor'](adjustedNum);
+
+    return truncatedNum / multiplier;
+};
+
+

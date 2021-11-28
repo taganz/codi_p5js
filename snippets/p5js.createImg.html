@@ -1,0 +1,51 @@
+<html>
+    <head>
+    <script src="https://cdn.jsdelivr.net/npm/p5@vv1.4.0/lib/p5.js" type="text/javascript"></script>
+</head>
+<body>
+    
+    <script>
+   let input;
+            let img;
+
+            function setup() {
+
+                // crea un element DOM input per obtener fitxer
+                input = createFileInput(handleFile);
+                console.log("setup...input: ", input);
+                input.position(0, 0);
+            }
+
+            function draw() {
+                background(255);
+                if (img) {
+                    image(img, 0, 0, width, height);        // dibuixa imatge al vcanvas
+                    console.log("draw...img: ", img, img.width, img.height);
+                    img = null;
+                }
+                noLoop();
+            }
+
+            function handleFile(file) {
+                print(file);
+                if (file.type === 'image') {
+                    img = createImg(file.data, '');     // crea un element DOM i img te el punter a p5.element (no es un p5.Image)
+                    img.hide();                         // amaguem perque si no apareix la foto en aquest element
+                    console.log("handlefile...img: ", img);
+                    console.log("handlefile...file.name: ", file.name);
+                    console.log("handlefile...file.subtype: ", file.subtype);
+                } else {
+                    img = null;
+            }
+        }
+
+        function mousePressed() {
+            loop();
+        }
+
+    </script>
+
+
+</body>
+
+</html>
