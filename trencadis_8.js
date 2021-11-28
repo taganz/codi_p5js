@@ -22,6 +22,7 @@ let image_loaded = false;
 let input;
 
 let path = 'https://www.rdalmau.com/codi_p5js/assets/image/';
+//let path = 'D:\\OneDrive\\_tec_dev\\p5js\\assets\\image\\';
 let loaded_image_path;
 
 // load img
@@ -36,7 +37,8 @@ function preload() {
 				 "rolling_stores.png",
 				 "apple.png",
 				 "monalisa.jpg",
-				 "monalisa_square.jpg"
+				 "monalisa_square.jpg",
+				 "silueta1.jpg"
 				];
     let i = img_file.length -1;
 	img = loadImage(path + img_file[i]);
