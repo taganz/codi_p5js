@@ -1,0 +1,11 @@
+  
+    // palette as an array of colors (https://openprocessing.org/sketch/1377780)
+    let palette = [];
+    while (palette.length < 3) {                        // want a palette with minimum 3 items
+        palette = [];
+        palette = shuffle(chromotome.get().colors);     // get array of color numbers
+        console.log("palette: "+palette);
+        for(let i = 0; i < palette.length; i++){        // convert to array of colors
+          palette[i] = color(palette[i]);
+        }
+      }

@@ -40,7 +40,7 @@ function preload() {
 				 "monalisa_square.jpg",
 				 "silueta1.jpg"
 				];
-    let i = img_file.length -1;
+    let i = img_file.length -2;
 	img = loadImage(path + img_file[i]);
 	console.log("PRIMERA IMATGES CARREGADA img: ", img);
 	
@@ -85,6 +85,7 @@ function setup() {
 	noSmooth();
 
 	input = createFileInput(handleFile);
+	input.html("file in rdalmau");
 	input.position(0, 0);
 
 }

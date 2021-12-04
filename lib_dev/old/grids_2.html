@@ -1,6 +1,6 @@
 <html>
 <head>
-    <script src="grids.js" type="text/javascript"></script>
+    <script src="grids_2.js" type="text/javascript"></script>
     <script src="..\lib\palette.js" type="text/javascript"></script>
     <script src="..\lib\keyboard.js" type="text/javascript"></script>
     <script src="..\lib\sliders_3.js" type="text/javascript"></script>
@@ -31,13 +31,20 @@
     	    if (var_changed != null ) {
                 clear();
 
-                arr_dots = grid_create(x, y, z, canvas_size);
-                //grid_draw(arr_dots);
-                grid_draw(arr_dots, color("red"), color("red"), color("red"), color("green"));
+                draw_square();
 
-                print(arr_dots[0]);
             }
         }
+
+        function draw_square() {
+            arr_dots = grid_create(x, y, z, canvas_size);
+            //grid_draw(arr_dots);
+            grid_draw(arr_dots, color("red"), color("red"), color("red"), color("green"));
+
+            print(arr_dots[0]);
+        
+        }
+
 
 
     </script>

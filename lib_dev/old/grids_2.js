@@ -1,5 +1,9 @@
 'use strict';
 
+
+
+let grids_dots_stroke_weight = 2; // 10
+
 // return array of dots with neighbours (array of dots)
 //           {x, y, neighbours}
 function grid_create(rows, row_min, row_max, room_size) {
@@ -99,15 +103,18 @@ function grid_create(rows, row_min, row_max, room_size) {
 }
 
 // a: 2d array of dots
+
 function grid_draw(a, 
         color_dots_1 = color("green"),
         color_dots_2 = color("red"),         
         color_line_same_row = color("blue"),
         color_line_other_row = color("black"),
-        offset_x = 0,
+        offset_x = 0,   
         offset_y = 0
 
         ) {
+
+
 
     // dots
 
@@ -121,7 +128,7 @@ function grid_draw(a,
             stroke(color_dots_2);
         }
         for (let i = 0; i < a[row].length; i++ ) {
-            strokeWeight(10);
+            strokeWeight(grids_dots_stroke_weight);   // 10
             point(offset_x + a[row][i].x, offset_y + a[row][i].y);
         }
     }
