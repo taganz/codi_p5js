@@ -1,0 +1,122 @@
+<html>
+    <head>
+    <script src="tenso.js" type="text/javascript"></script>
+    <!--script src="chromotome.js" type="text/javascript"></script-->
+    <script src="grids.js" type="text/javascript"></script>
+    <script src="perlin_textures.js" type="text/javascript"></script>
+    <script src="triangle_fill.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@vv1.4.0/lib/p5.js" type="text/javascript"></script>
+</head>
+<body>
+    
+    <script>
+        
+        let tens;
+
+        let pixel_density;
+        let window_width;
+        let window_height;
+            
+        let palette = ["#20342a", "#e9b4a6", "#f74713", "#686d2c"];
+        let c_palette = [];
+        let c_palette_strings = [];
+
+        let SEED = 500;
+        let ROWS = 10;
+        let DOTS_ROW = 15;
+        let WEIGHT = 35;
+        let STRING_BASE = 3;
+        let STRING_WEIGHT_RATIO = 0.05;
+        let OSCILLATION_X = 0;
+        let OSCILLATION_Y = 0;
+        let PERIOD_X = 10;
+        let PERIOD_Y = 10;
+        let AMPLITUDE_FACTOR_X = 0.1;
+        let AMPLITUDE_FACTOR_Y = 0.1;
+
+        let DOTS_LOWER_LIMIT = 0.8;
+        let WEIGHT_VARIATION = 0.1;
+        let OSC_Y_FACTOR = 70;
+        let OSC_Y_FACTOR_ROW = 0.8;
+
+        let PERLIN_K = 0.05;
+        let PERLIN_COLOR_RANGE = 70;
+        let PERLIN_PIXEL_SIZE = 1;
+
+        let MODE;
+        let NOISE_MODE;
+
+        let step;
+
+        function setup() {
+
+            randomSeed(SEED*100);
+            noiseSeed(SEED); 
+
+            colorMode(RGB, 255);
+            pixelDensity(1);   // <-----
+            pixel_density = pixelDensity();
+            createCanvas(windowWidth, windowHeight);
+            window_width = windowWidth;
+            window_height = windowHeight
+        
+
+            for(let i = 0; i < palette.length; i++){        // convert to array of colors
+                c_palette[i] = color(palette[i]);
+            }
+            c_palette_strings = c_palette;
+
+            step = 0;
+
+            tens = new Tenso();
+        }
+
+
+
+
+        function draw() {
+
+
+            clear();
+            //background(c_background_color, 30/100 * 255 );
+            background(0, 30/100 * 255 );
+            fill(120);
+
+            square(tens.off_x, tens.off_y, tens.size); 
+
+            MODE = 1;
+            NOISE_MODE = 3;
+
+
+            if (MODE == 0) {
+                tens.display();
+                tens.move_curtain();
+            }
+            else {
+                if (NOISE_MODE == 0) {
+                    tens.display_triangles();
+                }
+                else if (NOISE_MODE == 1) {
+                    tens.display_triangles();
+                }
+                else if (NOISE_MODE == 2) {
+                    // nothing
+                }
+                else if (NOISE_MODE == 3) {
+                    loadPixels();
+                    tens.display_triangles_perlin(pixels);
+                    updatePixels();    
+                }
+            }
+            //   tens.move_neurons();
+            step++;
+
+        }
+ 
+   
+    </script>
+
+
+</body>
+
+</html>
