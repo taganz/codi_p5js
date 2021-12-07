@@ -30,7 +30,7 @@ class Tenso {
         for (let row = 0; row < this.rows; row++){       // create all rows
             this.a[row] = new Array();
             dots_this_row = floor(DOTS_ROW * random(DOTS_LOWER_LIMIT, 1));
-            let dots_spacing = (this.size - 2*this.size*MARGIN_WIDTH  ) / (dots_this_row - 1);       // dots distance
+            let dots_spacing = (this.size - 2*MARGIN_WIDTH  ) / (dots_this_row - 1);       // dots distance
             let row_color_num = floor(random(1, c_palette.length-1));
             let y_average = this.size * MARGIN_HEIGHT + row_height * (row + random(-ROW_SPACING_RANGE,+ROW_SPACING_RANGE));  
             for (let i = 0; i < dots_this_row; i++) {   // create row dots
@@ -53,13 +53,13 @@ class Tenso {
 
                 // calculate X
                 if (i == 0) {
-                    x = this.size * MARGIN_WIDTH + dots_spacing * random(DOT_LEFT_RANGE);                 // first row fixed
+                    x = MARGIN_WIDTH + dots_spacing * random(DOT_LEFT_RANGE);                 // first row fixed
                 }
                 else if (i == dots_this_row -1) {
-                    x = (this.size - this.size * MARGIN_WIDTH) - dots_spacing * random(DOT_LEFT_RANGE);
+                    x = (this.size - MARGIN_WIDTH) - dots_spacing * random(DOT_LEFT_RANGE);
                 }
                 else {
-                    x = this.size * MARGIN_WIDTH + dots_spacing * (i + random(-DOT_SPACING_RANGE, DOT_SPACING_RANGE));
+                    x = MARGIN_WIDTH + dots_spacing * (i + random(-DOT_SPACING_RANGE, DOT_SPACING_RANGE));
                 }
 
 
@@ -237,48 +237,30 @@ class Tenso {
             for (let i = 0; i < a[row].length; i++ ) {                  // per cada punt de la linia
                 //a[row][i].x = this._move_1(a[row][i]);
                 //a[row][i].y = this._move_2(a[row][i]);
-                this._move_1(a[row][i]);                            // mou el punt
-
-                if (ROW_DANCE == 0) {
+                this._move_1(a[row][i]);
+                
                     if (row > 1) {
                         if (a[row][i].neighbours != null) {
-                            for (let n = 0; n < a[row][i].neighbours.length; n++) {    // actualitza els veins
+                            for (let n = 0; n < a[row][i].neighbours.length; n++) {
+                                //a[row][i].neighbours[n].x = this._move_1(a[row][i].neighbours[n]);
                                 this._move_1(a[row][i].neighbours[n]);
                             }
                         }
                     }
+
                 }
-                
             }
         }
-    }
-         _move_1(d) {
-             switch(MOVE_MODE) {
-                 case 1:
-                    d.x = d.x0 + 10 * Math.cos(TWO_PI * step % 50 + d.x0 );
-                    d.y = d.y0 + 10 * Math.cos(TWO_PI * step % 50 + d.y0 );
-                    d.x = min(max(d.x, 0), this.size);
-                    d.y = min(max(d.y, 0), this.size);
-                break;
-                case 2:
-                    d.x = d.x0 + 20 * Math.cos(TWO_PI * d.x0/this.size * step / MOVE_MODE_SPEED);
-                    d.y = d.y0 + 10 * Math.cos(TWO_PI * d.y0/this.size * step / MOVE_MODE_SPEED);
-                break;
-                case 3:    // ojo, hi ha un moment que s'autodestrueix <--- 
-                    d.x = d.x0 + 10 * Math.sin(TWO_PI * d.x/this.size * step / MOVE_MODE_SPEED);
-                    d.y = d.y0 + 10 * Math.cos(TWO_PI * d.y/this.size * step / MOVE_MODE_SPEED);
-                    break;
-                case 4:   // not working
-                    d.x = d.x0 + 10 * (0.5 - noise((d.x0 + step) * 0.005)); // convergeixen en 4 punts
-                    d.y = d.y0 + 10 * (0.5 - noise((d.y0 + step) * 0.005)); // convergeixen en 4 punts
-                break;
-                case 5:
-                    // reserved for curtain
-                break;
-                default:
-             }
+
+        _move_1(d) {
+            //return x + 10 * (0.5 - noise(x * 0.005)); // convergeixen en 4 punts
+            //return x + 10 * Math.cos(TWO_PI * x/this.size * step / 50);
+            d.x = d.x0 + 10 * Math.cos(TWO_PI * step % 50 + d.x0 );
+            d.y = d.y0 + 10 * Math.cos(TWO_PI * step % 50 + d.y0 );
+            d.x = min(max(d.x, 0), this.size);
+            d.y = min(max(d.y, 0), this.size);
         }
-    
+        
 
     display() {
     
@@ -335,7 +317,7 @@ class Tenso {
         let a = this.a;
 
         // lines to next rows
-        //stroke("green");  
+        stroke("green");  
         strokeWeight(1); 
         let triangle_color = 0;
         for (let row = 1; row < a.length ; row++) {
@@ -370,7 +352,6 @@ class Tenso {
        if (draw_smooth) {
             noStroke();
             fill(col);
-            stroke(col);
             triangle(this.off_x + dot_a.x, this.off_y + dot_a.y, this.off_x + dot_b.x, this.off_y + dot_b.y, this.off_x + dot_c.x, this.off_y + dot_c.y);
        }
        else {

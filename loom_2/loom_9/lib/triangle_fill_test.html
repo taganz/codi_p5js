@@ -1,0 +1,41 @@
+<html>
+    <head>
+    <script src="triangle_fill.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@vv1.4.0/lib/p5.js" type="text/javascript"></script>
+</head>
+<body>
+    
+    <script>
+        
+        function setup() {
+            createCanvas(800, 800);
+
+            background('white');
+
+            stroke('green');
+            
+        }
+
+
+        function draw() {
+
+            let A = {x: 10, y: 10 };
+            let B = {x: 300, y: 100 };
+            let C = {x: 200, y: 220 };
+            
+            triangle_fill(A, B, C, pintar_linia);
+
+            noLoop();
+        }
+     
+        function pintar_linia(x1, y1, x2, y2) {
+            stroke('red');
+            line(x1, y1, x2, y2);
+        }
+       
+    </script>
+
+
+</body>
+
+</html>

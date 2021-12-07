@@ -23,14 +23,14 @@ class Tenso {
 
         let a = this.a;
 
-        let x, y, dots_this_row, n_dot_color;
+        let x, y, dots_this_row, dot_color;
         let row_height = (this.size * (1 - 2 * MARGIN_HEIGHT))  / (this.rows - 1 );
 
         
         for (let row = 0; row < this.rows; row++){       // create all rows
             this.a[row] = new Array();
             dots_this_row = floor(DOTS_ROW * random(DOTS_LOWER_LIMIT, 1));
-            let dots_spacing = (this.size - 2*this.size*MARGIN_WIDTH  ) / (dots_this_row - 1);       // dots distance
+            let dots_spacing = (this.size - 2*MARGIN_WIDTH  ) / (dots_this_row - 1);       // dots distance
             let row_color_num = floor(random(1, c_palette.length-1));
             let y_average = this.size * MARGIN_HEIGHT + row_height * (row + random(-ROW_SPACING_RANGE,+ROW_SPACING_RANGE));  
             for (let i = 0; i < dots_this_row; i++) {   // create row dots
@@ -53,13 +53,20 @@ class Tenso {
 
                 // calculate X
                 if (i == 0) {
-                    x = this.size * MARGIN_WIDTH + dots_spacing * random(DOT_LEFT_RANGE);                 // first row fixed
+                    //x = this.size * MARGIN_WIDTH + dots_spacing * random(DOT_LEFT_RANGE);                 // first row fixed
+                    x = MARGIN_WIDTH + dots_spacing * random(DOT_LEFT_RANGE);                 // first row fixed
                 }
                 else if (i == dots_this_row -1) {
-                    x = (this.size - this.size * MARGIN_WIDTH) - dots_spacing * random(DOT_LEFT_RANGE);
+                    x = (this.size - MARGIN_WIDTH) - dots_spacing * random(DOT_LEFT_RANGE);
                 }
                 else {
-                    x = this.size * MARGIN_WIDTH + dots_spacing * (i + random(-DOT_SPACING_RANGE, DOT_SPACING_RANGE));
+                   // x = this.size * MARGIN_WIDTH + random(dots_spacing * (i-1) , dots_spacing * i);
+                    x = MARGIN_WIDTH + dots_spacing * (i + random(-DOT_SPACING_RANGE, DOT_SPACING_RANGE));
+         //          x = max (x, MARGIN_WIDTH); // check left limit
+         //           if (row > 0) {
+         //               x = max([x, a[row-1][i-1].x, a[row][i-1].x+ dots_spacing * 0.3]); // check left columns
+          //          }
+          //          x = min (this.size * (1 - MARGIN_WIDTH), x);  // check rigth limit
                 }
 
 
@@ -67,59 +74,27 @@ class Tenso {
 
 
                 // color
+
+
+
+                //let dot_color = palette_dots[ floor(lerp(0, palette_dots.length, row/ROWS)) ];
                 switch(COLOR_MODE) {
-                    case 0:         // random, no check
+                    case 0:
                     default:
-                        n_dot_color = n_palette[floor(random(0, n_palette.length))];
+                        dot_color = c_palette[floor(random(0, c_palette.length))];
                         break
-                    case 1:         // gradation inside row
-                        n_dot_color = lerpColor( color(n_palette[0]), color(n_palette[row_color_num+1]), i/dots_this_row);
+                    case 1:
+                        dot_color = lerpColor( c_palette[0], c_palette[row_color_num+1], i/dots_this_row);
                         break;
-                    case 2:            // gradation inside row
-                       n_dot_color = lerpColor( color(n_palette[row_color_num]), color(n_palette[row_color_num+1]), row/ROWS);
+                    case 2:
+                        dot_color = lerpColor( c_palette[row_color_num], c_palette[row_color_num+1], row/ROWS);
                         break;
-                    case 3:         // random, check neighbours
-                        if (n_palette.length < 3) {         // forget about checking
-                            n_dot_color = n_palette[floor(random(0, n_palette.length))];
-                        }
-                        else if (row == 0 && i == 0) {
-                            n_dot_color = n_palette[floor(random(0, n_palette.length))];
-                        }
-                        else if (row == 0 && i > 0) {  
-                            do {
-                                n_dot_color = n_palette[floor(random(0, n_palette.length))];
-                            } while (n_dot_color == a[row][i-1].n_color);
-                        }  
-                        else if (row > 0 && i == 0) {                            
-                            let match;
-                            do   {
-                                match = false;
-                                n_dot_color = n_palette[floor(random(0, n_palette.length))];
-                                for (let j = 0; j < 2 && j < a[row-1].length; j++) {
-                                    match = match || n_dot_color == a[row-1][j].n_color; // previous row
-                                }
-                            } while (match == true);
-                        } 
-                        else if (row > 0 && i > 0) {                            
-                                let match;
-                                do   {
-                                    match = false;
-                                    n_dot_color = n_palette[floor(random(0, n_palette.length))];
-                                    match = match || n_dot_color == a[row][i-1].n_color;  // previous
-                                    for (let j = i-1; j < i+2 && j < a[row-1].length; j++) {
-                                        match = match || n_dot_color == a[row-1][j].n_color; // previous row
-                                    }
-                                } while (match == true);
-                            }
-                        else {
-                            print_debug("*** error processing color mode", COLOR_MODE);
-                        }
                 }
 
                 let phase = lerp(0, PI, row/this.rows);
 
                 // create point
-                a[row].push({x: x, x0: x, y: y, y0: y, weight: weight, color: color(n_dot_color), n_color: n_dot_color, phase: phase});
+                a[row].push({x: x, x0: x, y: y, y0: y, weight: weight, color: dot_color, phase: phase});
 
 
             }
@@ -138,7 +113,7 @@ class Tenso {
                 for (let j=0; j < a[row-1].length && a[row][i].neighbours.length < 2; j++) {
                     //if (a[row-1][j].x >= x_prev && a[row-1][j].x <= x_post) {
                     if (a[row-1][j].x >= x_prev) {
-                            a[row][i].neighbours.push({x: a[row-1][j].x, y: a[row-1][j].y, x0: a[row-1][j].x0, y0: a[row-1][j].y0, weight: a[row-1][j].weight, color: a[row-1][j].color, n_color: a[row-1][j].n_color, phase: a[row-1][j].phase});
+                            a[row][i].neighbours.push({x: a[row-1][j].x, y: a[row-1][j].y, x0: a[row-1][j].x0, y0: a[row-1][j].y0, weight: a[row-1][j].weight, color: a[row-1][j].color, phase: a[row-1][j].phase});
                     }
                 }
             }
@@ -237,48 +212,30 @@ class Tenso {
             for (let i = 0; i < a[row].length; i++ ) {                  // per cada punt de la linia
                 //a[row][i].x = this._move_1(a[row][i]);
                 //a[row][i].y = this._move_2(a[row][i]);
-                this._move_1(a[row][i]);                            // mou el punt
-
-                if (ROW_DANCE == 0) {
+                this._move_1(a[row][i]);
+                
                     if (row > 1) {
                         if (a[row][i].neighbours != null) {
-                            for (let n = 0; n < a[row][i].neighbours.length; n++) {    // actualitza els veins
+                            for (let n = 0; n < a[row][i].neighbours.length; n++) {
+                                //a[row][i].neighbours[n].x = this._move_1(a[row][i].neighbours[n]);
                                 this._move_1(a[row][i].neighbours[n]);
                             }
                         }
                     }
+
                 }
-                
             }
         }
-    }
-         _move_1(d) {
-             switch(MOVE_MODE) {
-                 case 1:
-                    d.x = d.x0 + 10 * Math.cos(TWO_PI * step % 50 + d.x0 );
-                    d.y = d.y0 + 10 * Math.cos(TWO_PI * step % 50 + d.y0 );
-                    d.x = min(max(d.x, 0), this.size);
-                    d.y = min(max(d.y, 0), this.size);
-                break;
-                case 2:
-                    d.x = d.x0 + 20 * Math.cos(TWO_PI * d.x0/this.size * step / MOVE_MODE_SPEED);
-                    d.y = d.y0 + 10 * Math.cos(TWO_PI * d.y0/this.size * step / MOVE_MODE_SPEED);
-                break;
-                case 3:    // ojo, hi ha un moment que s'autodestrueix <--- 
-                    d.x = d.x0 + 10 * Math.sin(TWO_PI * d.x/this.size * step / MOVE_MODE_SPEED);
-                    d.y = d.y0 + 10 * Math.cos(TWO_PI * d.y/this.size * step / MOVE_MODE_SPEED);
-                    break;
-                case 4:   // not working
-                    d.x = d.x0 + 10 * (0.5 - noise((d.x0 + step) * 0.005)); // convergeixen en 4 punts
-                    d.y = d.y0 + 10 * (0.5 - noise((d.y0 + step) * 0.005)); // convergeixen en 4 punts
-                break;
-                case 5:
-                    // reserved for curtain
-                break;
-                default:
-             }
+
+        _move_1(d) {
+            //return x + 10 * (0.5 - noise(x * 0.005)); // convergeixen en 4 punts
+            //return x + 10 * Math.cos(TWO_PI * x/this.size * step / 50);
+            d.x = d.x0 + 10 * Math.cos(TWO_PI * step % 50 + d.x0 );
+            d.y = d.y0 + 10 * Math.cos(TWO_PI * step % 50 + d.y0 );
+            d.x = min(max(d.x, 0), this.size);
+            d.y = min(max(d.y, 0), this.size);
         }
-    
+        
 
     display() {
     
@@ -335,7 +292,7 @@ class Tenso {
         let a = this.a;
 
         // lines to next rows
-        //stroke("green");  
+        stroke("green");  
         strokeWeight(1); 
         let triangle_color = 0;
         for (let row = 1; row < a.length ; row++) {
@@ -370,7 +327,6 @@ class Tenso {
        if (draw_smooth) {
             noStroke();
             fill(col);
-            stroke(col);
             triangle(this.off_x + dot_a.x, this.off_y + dot_a.y, this.off_x + dot_b.x, this.off_y + dot_b.y, this.off_x + dot_c.x, this.off_y + dot_c.y);
        }
        else {
@@ -394,7 +350,7 @@ class Tenso {
             for (let i = 0; i < a[row].length; i++ ) {                  // every point in row
             
                 let dot_a = a[row][i];
-                print_debug(dot_a);
+                console.log(dot_a);
 
                 // triangles with vertex in dot a
                 for (let n = 1; n < a[row][i].neighbours.length; n++) {  // dots for base

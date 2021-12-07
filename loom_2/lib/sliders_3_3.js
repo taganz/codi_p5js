@@ -23,8 +23,7 @@
     setup()
 
         sliders_activate();     // show sliders, if not will work with default values
-        sliders_add(min, max, val, increment=0, "var1", true, "instructions var1");  // 0 	
-        sliders_add(min, max, val, increment=0 "var2"); // 1 
+        sliders_add("var1", val, min, max, increment=0, true, "instructions var1");  // 0 	
         ...
         
         
@@ -84,7 +83,7 @@ function sliders_activate() {
 
 
 // create div _sliders_div
-function sliders_add(min, max, default_value, step, var_name, show=true, txt_help="") {
+function sliders_add(var_name, default_value, min, max, step, show=true, txt_help="") {
 
 
     // create variable

@@ -34,7 +34,7 @@
     </style>    
 
   <head>
-      <script src="sliders_3_2.js" type="text/javascript"></script>
+      <script src="sliders_3_3.js" type="text/javascript"></script>
       <!--script src="lib\sliders_2.js" type="text/javascript"></script-->
       <script src="https://cdn.jsdelivr.net/npm/p5@vv1.4.0/lib/p5.js" type="text/javascript"></script>
     </head>
@@ -74,10 +74,10 @@
           
           sliders_activate(); // call this first in order to show sliders
 
-          sliders_add(0, 10, 5, 1, "var1", true );   	
-          sliders_add(0, 20, 10, 1, "var2", true, "txt help for var2"); 
-          sliders_add(0, 10, 5, 1, "var3", false );   	
-          sliders_add(0, 20, 10, 1, "var4", false, "txt help for var4"); 
+          sliders_add("var1", 5, 0, 10, 1,  true );   	
+          sliders_add("var2", 10, 0, 20, 1, true, "txt help for var2"); 
+          sliders_add("var3", 5, 0, 10, 1, false );   	
+          sliders_add("var4", 10, 0, 20, 1, false, "txt help for var4"); 
           
       }
 
